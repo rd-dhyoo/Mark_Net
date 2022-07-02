@@ -1,26 +1,33 @@
-﻿using BaseNet.Core.Repositories.SystemLogs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BaseNet.Core.Entities.SystemLogs;
+using BaseNet.Core.Models.SystemLogs;
+using BaseNet.Core.Repositories.Commons;
+using BaseNet.Core.Repositories.SystemLogs;
 
 namespace BaseNet.Core.Services.SystemLogs
 {
-    public class BaseLogReaderService<T>
+    public abstract class SystemLogService<T> where T : ISystemLogEntity
     {
-        ISystemLogRepository<T> _repository;
-        LogMapper _mapper;
+        private readonly ISystemLogRepository<T> _repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly LogMapper _mapper;
 
-        public BaseLogReaderService(
+        public SystemLogService(
             ISystemLogRepository<T> repository,
+            IUnitOfWork unitOfWork,
             LogMapper mapper)
         {
             _repository = repository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public async Task<PaginatedResponse<T>> GetPagedAsync(SystemLogPagedParameter parameter)
+        public async Task<bool> PutAsync(T entity) 
+        {
+            await _repository.AddAsync(entity);
+            return await _unitOfWork.SaveEntitiesAsync();
+        }
+
+        public async Task<PaginatedResponse<T>> GetPagedAsync(DatePagedParameter parameter)
         {
             var dataCount = await _repository.GetCountAsync(parameter);
             var pageCount = (int)Math.Ceiling(dataCount / (double)parameter.Limit);
@@ -29,7 +36,7 @@ namespace BaseNet.Core.Services.SystemLogs
             return response;
         }
 
-        public async Task<IEnumerable<T>> GetRangeAsync(SystemLogRangedParameter parameter)
+        public async Task<IEnumerable<T>> GetRangeAsync(DatePagedParameter parameter)
         {
             var records = await _repository.GetLogsAsync(parameter);
             return records;

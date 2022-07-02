@@ -2,17 +2,20 @@
 
 namespace BaseNet.Core.Services.SystemLogs
 {
-    public PaginatedResponse<T> MapLogs<T>(IEnumerable<T> logs, int offset, int limit, int total)
+    public class LogMapper
     {
-        return new PaginatedResponse<T>()
+        public PaginatedResponse<T> MapLogs<T>(IEnumerable<T> logs, int offset, int limit, int total)
         {
-            Metadata = new PaginatedResponseMetadata()
+            return new PaginatedResponse<T>()
             {
-                Offset = offset,
-                Limit = limit,
-                Total = total,
-            },
-            Records = logs
-        };
+                Metadata = new PaginatedResponseMetadata()
+                {
+                    Offset = offset,
+                    Limit = limit,
+                    Total = total,
+                },
+                Records = logs
+            };
+        }
     }
 }
