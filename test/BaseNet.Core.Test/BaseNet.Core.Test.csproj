@@ -21,8 +21,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\MarkCore.Models\BaseNet.Core.csproj" />
-  </ItemGroup>
-
 </Project>
